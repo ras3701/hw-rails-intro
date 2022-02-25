@@ -12,6 +12,8 @@ gem 'uglifier', '>= 1.3.0'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 
+# Bootstrap
+gem 'bootstrap'
 
 # Use Unicorn as the app server
 # gem 'unicorn'
