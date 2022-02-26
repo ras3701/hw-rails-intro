@@ -7,9 +7,22 @@ class MoviesController < ApplicationController
     end
   
     def index
-      @movies = Movie.all
-      @sorting_on_a_column = params[:sort]
-      @movies = Movie.all.order(@sorting_on_a_column)
+      
+      # Setting @all_ratings to be an enumerable collection of all possible values of a movie rating.
+      @all_ratings = Movie.select(:rating).map(&:rating).uniq
+      
+      if params[:sort] || params[:ratings]  # If either is defined...
+        @sorting_on_a_column = params[:sort]
+        
+        @ratings = params[:ratings] # Setting the parameters for ratings.
+        @ratings ||= @all_ratings
+        @ratings = @ratings.keys if @ratings.respond_to?(:keys) # Display the ratings selected by the user.
+      
+        @movies = Movie.where("rating IN (?)", @ratings).order(params[:sort])
+      else  # If neither is defined, display all movies.
+        @movies = Movie.all
+      end
+      
     end
   
     def new
