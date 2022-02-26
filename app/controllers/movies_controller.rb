@@ -8,20 +8,33 @@ class MoviesController < ApplicationController
   
     def index
       
-      # Setting @all_ratings to be an enumerable collection of all possible values of a movie rating.
+      # Setting @all_ratings to be an enumerable collection of all possible values of a movie rating (based on values provided in the DB).
       @all_ratings = Movie.select(:rating).map(&:rating).uniq
       
       if params[:sort] || params[:ratings]  # If either is defined...
+        
+        if params[:sort]  # Update session[:sort]
+          session[:sort] = params[:sort]
+        end
+        
+        if params[:ratings] # Update session[:ratings]
+          session[:ratings] = params[:ratings]
+        end
+        
+        @ratings = session[:ratings] # Setting the parameters for ratings.
+        @ratings = @ratings.keys if @ratings.respond_to?(:keys) # Display the ratings selected by the user.
+        
         @sorting_on_a_column = params[:sort]
         
-        @ratings = params[:ratings] # Setting the parameters for ratings.
-        @ratings ||= @all_ratings
-        @ratings = @ratings.keys if @ratings.respond_to?(:keys) # Display the ratings selected by the user.
-      
-        @movies = Movie.where("rating IN (?)", @ratings).order(params[:sort])
-      else  # If neither is defined, display all movies.
-        @movies = Movie.all
-      end
+        # If incoming URI is lacking the right params.
+        if session[:sort] != params[:sort] || session[:ratings] != params[:ratings]
+          flash.keep
+          redirect_to movies_path(sort: session[:sort], ratings: session[:ratings])
+        end
+      end  
+        
+
+      @movies = Movie.where("rating IN (?)", @ratings).order(session[:sort])
       
     end
   
