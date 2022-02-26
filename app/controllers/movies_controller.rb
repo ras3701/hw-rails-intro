@@ -18,11 +18,12 @@ class MoviesController < ApplicationController
       if params[:ratings] # Update session[:ratings]
         session[:ratings] = params[:ratings]
       end
-        
+      
+      session[:ratings] ||= @all_ratings
       @ratings = session[:ratings] # Setting the parameters for ratings.
       @ratings = @ratings.keys if @ratings.respond_to?(:keys) # Display the ratings selected by the user.
         
-      @sorting_on_a_column = params[:sort]
+      @sorting_on_a_column = session[:sort]
         
       # If incoming URI is lacking the right params.
       if session[:sort] != params[:sort] || session[:ratings] != params[:ratings]
